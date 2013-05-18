@@ -43,6 +43,8 @@ LIBS := $(filter-out -lpgport, $(LIBS)) $(LDAP_LIBS_BE)
 # The backend doesn't need everything that's in LIBS, however
 LIBS := $(filter-out -lz -lreadline -ledit -ltermcap -lncurses -lcurses, $(LIBS))
 
+# add lrt for clock_gettime
+LIBS := $(LIBS) -lrt
 ##########################################################################
 
 all: submake-libpgport submake-schemapg postgres $(POSTGRES_IMP)

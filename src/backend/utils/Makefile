@@ -8,7 +8,7 @@ subdir = src/backend/utils
 top_builddir = ../../..
 include $(top_builddir)/src/Makefile.global
 
-OBJS        = fmgrtab.o
+OBJS        = fmgrtab.o trace.o
 SUBDIRS     = adt cache error fmgr hash init mb misc mmgr resowner sort time
 
 # location of Catalog.pm
@@ -50,3 +50,8 @@ clean:
 
 maintainer-clean: clean
 	rm -f fmgroids.h fmgrtab.c errcodes.h
+
+.PHONY: check-syntax
+
+check-syntax:
+	$(CC) -Wall -fsyntax-only $(CHK_SOURCES)

@@ -1,1 +1,1 @@
-* postgres for my study
+postgres for my study

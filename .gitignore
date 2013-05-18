@@ -23,6 +23,9 @@ win32ver.rc
 lib*dll.def
 
 # Local excludes in root directory
+a.out
+conf*.dir
+/src/tags
 /GNUmakefile
 /config.log
 /config.status

@@ -48,6 +48,7 @@
 #include "utils/rel.h"
 #include "utils/resowner.h"
 #include "utils/timestamp.h"
+#include "utils/trace.h"
 
 
 /* Note: these two macros only work on shared buffers, not local ones! */
@@ -83,6 +84,8 @@ static bool IsForInput;
 /* local state for LockBufferForCleanup */
 static volatile BufferDesc *PinCountWaitBuf = NULL;
 
+// relid for tracer
+static Oid current_relid = 0;
 
 static Buffer ReadBuffer_common(SMgrRelation reln, char relpersistence,
 				  ForkNumber forkNum, BlockNumber blockNum,
@@ -245,6 +248,8 @@ ReadBufferExtended(Relation reln, ForkNumber forkNum, BlockNumber blockNum,
 	 * miss.
 	 */
 	pgstat_count_buffer_read(reln);
+
+	current_relid = RelationGetRelid(reln);
 	buf = ReadBuffer_common(reln->rd_smgr, reln->rd_rel->relpersistence,
 							forkNum, blockNum, mode, strategy, &hit);
 	if (hit)
@@ -273,6 +278,7 @@ ReadBufferWithoutRelcache(RelFileNode rnode, ForkNumber forkNum,
 
 	Assert(InRecovery);
 
+	current_relid = 0;
 	return ReadBuffer_common(smgr, RELPERSISTENCE_PERMANENT, forkNum, blockNum,
 							 mode, strategy, &hit);
 }
@@ -446,7 +452,11 @@ ReadBuffer_common(SMgrRelation smgr, char relpersistence, ForkNumber forkNum,
 			if (track_io_timing)
 				INSTR_TIME_SET_CURRENT(io_start);
 
+			trace_event(EVENT_IO_START, current_relid, blockNum);
+
 			smgrread(smgr, forkNum, blockNum, (char *) bufBlock);
+
+			trace_event(EVENT_IO_FINISH, current_relid, blockNum);
 
 			if (track_io_timing)
 			{

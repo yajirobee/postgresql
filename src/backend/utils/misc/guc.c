@@ -446,6 +446,8 @@ int			tcp_keepalives_idle;
 int			tcp_keepalives_interval;
 int			tcp_keepalives_count;
 
+bool enable_iotracer = false;
+
 /*
  * These variables are all dummies that don't do anything, except in some
  * cases provide the value for SHOW to display.  The real state is elsewhere
@@ -666,6 +668,15 @@ const char *const config_type_names[] =
 
 static struct config_bool ConfigureNamesBool[] =
 {
+	{
+		{"enable_iotracer", PGC_POSTMASTER, DEVELOPER_OPTIONS,
+		 gettext_noop("Enables I/O Tracer."),
+		 NULL
+		},
+		&enable_iotracer,
+		false,
+		NULL, NULL, NULL
+	},
 	{
 		{"enable_seqscan", PGC_USERSET, QUERY_TUNING_METHOD,
 			gettext_noop("Enables the planner's use of sequential-scan plans."),
