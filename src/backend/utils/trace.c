@@ -1,7 +1,6 @@
 
 #include "postgres.h"
 
-#include <unistd.h>
 #include <time.h>
 #include "utils/trace.h"
 

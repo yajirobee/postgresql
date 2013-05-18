@@ -73,6 +73,7 @@
 #include "utils/ps_status.h"
 #include "utils/snapmgr.h"
 #include "utils/timestamp.h"
+#include "utils/trace.h"
 #include "mb/pg_wchar.h"
 
 
@@ -3949,6 +3950,8 @@ PostgresMain(int argc, char *argv[],
 			case 'Q':			/* simple query */
 				{
 					const char *query_string;
+
+					start_trace();
 
 					/* Set statement_timestamp() */
 					SetCurrentStatementStartTimestamp();
