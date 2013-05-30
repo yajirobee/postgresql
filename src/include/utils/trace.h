@@ -6,8 +6,10 @@
 extern bool enable_iotracer;
 
 typedef enum {
-	EVENT_IO_START = 'S',
-	EVENT_IO_FINISH = 'F'
+	EVENT_READIO_START = 'r',
+	EVENT_READIO_FINISH = 'R',
+	EVENT_WRITEIO_START = 'w',
+	EVENT_WRITEIO_FINISH = 'W'
 } trace_event_t;
 
 void start_trace(void);
