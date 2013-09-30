@@ -447,6 +447,7 @@ int			tcp_keepalives_interval;
 int			tcp_keepalives_count;
 
 bool enable_iotracer = false;
+bool enable_buckettracer = false;
 
 /*
  * These variables are all dummies that don't do anything, except in some
@@ -674,6 +675,15 @@ static struct config_bool ConfigureNamesBool[] =
 		 NULL
 		},
 		&enable_iotracer,
+		false,
+		NULL, NULL, NULL
+	},
+	{
+		{"enable_buckettracer", PGC_POSTMASTER, DEVELOPER_OPTIONS,
+		 gettext_noop("Enable Hash Bucket Tracer."),
+		 NULL
+		}
+		&enable_buckettracer,
 		false,
 		NULL, NULL, NULL
 	},
