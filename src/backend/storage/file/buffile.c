@@ -236,9 +236,11 @@ BufFileLoadBuffer(BufFile *file)
 	/*
 	 * Read whatever we can get, up to a full bufferload.
 	 */
-	iotrace_event(EVENT_READIO_START, 0, (uint64_t) sizeof(file->buffer));
+	trace_event2(enable_iotracer, EVENT_READIO_START,
+				 0, (uint64_t) sizeof(file->buffer));
 	file->nbytes = FileRead(thisfile, file->buffer, sizeof(file->buffer));
-	iotrace_event(EVENT_READIO_FINISH, 0, (uint64_t) sizeof(file->buffer));
+	trace_event2(enable_iotracer, EVENT_READIO_FINISH,
+				 0, (uint64_t) sizeof(file->buffer));
 	if (file->nbytes < 0)
 		file->nbytes = 0;
 	file->offsets[file->curFile] += file->nbytes;
@@ -301,9 +303,11 @@ BufFileDumpBuffer(BufFile *file)
 				return;			/* seek failed, give up */
 			file->offsets[file->curFile] = file->curOffset;
 		}
-		trace_event(EVENT_WRITEIO_START, 0, (uint64_t) bytestowrite);
+		trace_event2(enable_iotracer, EVENT_WRITEIO_START,
+					  0, (uint64_t) bytestowrite);
 		bytestowrite = FileWrite(thisfile, file->buffer + wpos, bytestowrite);
-		iotrace_event(EVENT_WRITEIO_FINISH, 0, (uint64_t) bytestowrite);
+		trace_event2(enable_iotracer, EVENT_WRITEIO_FINISH,
+					 0, (uint64_t) bytestowrite);
 		if (bytestowrite <= 0)
 			return;				/* failed to write */
 		file->offsets[file->curFile] += bytestowrite;

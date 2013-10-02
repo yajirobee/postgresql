@@ -917,12 +917,19 @@ ExecScanHashBucket(HashJoinState *hjstate,
 	if (hashTuple != NULL)
 		hashTuple = hashTuple->next;
 	else if (hjstate->hj_CurSkewBucketNo != INVALID_SKEW_BUCKET_NO)
+	{
 		hashTuple = hashtable->skewBucket[hjstate->hj_CurSkewBucketNo]->tuples;
+		hjstate->CurBuket_Scanned_Tuples = 0;	/* added by keisuke */
+	}
 	else
+	{
 		hashTuple = hashtable->buckets[hjstate->hj_CurBucketNo];
+		hjstate->CurBuket_Scanned_Tuples = 0;	/* added by keisuke */
+	}
 
 	while (hashTuple != NULL)
 	{
+		hjstate->CurBuket_Scanned_Tuples++;	/* added by keisuke */
 		if (hashTuple->hashvalue == hashvalue)
 		{
 			TupleTableSlot *inntuple;
@@ -949,6 +956,12 @@ ExecScanHashBucket(HashJoinState *hjstate,
 	/*
 	 * no match
 	 */
+	trace_event5(enable_buckettracer, EVENT_BUCKET_SCAN,
+				 (uint64_t) hjstate->hj_HashTable->nbatch,
+				 (uint64_t) hjstate->hj_HashTable->nbuckets,
+				 (uint64_t) hjstate->hj_HashTable->speaceUsed,
+				 (uint64_t) hjstate->hj_CurHashValue,
+				 (uint64_t) hjstate->CurBuket_Scanned_Tuples)
 	return false;
 }
 

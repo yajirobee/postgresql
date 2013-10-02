@@ -1611,6 +1611,7 @@ typedef struct HashJoinState
 	int			hj_JoinState;
 	bool		hj_MatchedOuter;
 	bool		hj_OuterNotEmpty;
+	uint32		CurBuket_Scanned_Tuples;	/* added by keisuke */
 } HashJoinState;
 
 

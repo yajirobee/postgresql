@@ -452,11 +452,13 @@ ReadBuffer_common(SMgrRelation smgr, char relpersistence, ForkNumber forkNum,
 			if (track_io_timing)
 				INSTR_TIME_SET_CURRENT(io_start);
 
-			iotrace_event(EVENT_READIO_START, current_relid, blockNum);
+			trace_event2(enable_iotracer, EVENT_READIO_START,
+						 current_relid, blockNum);
 
 			smgrread(smgr, forkNum, blockNum, (char *) bufBlock);
 
-			iotrace_event(EVENT_READIO_FINISH, current_relid, blockNum);
+			trace_event2(enable_iotracer, EVENT_READIO_FINISH,
+						 current_relid, blockNum);
 
 			if (track_io_timing)
 			{
