@@ -26,6 +26,15 @@ static uint64_t basetime;
 static trace_record_t *records = NULL;
 static trace_record_t *cur_record = NULL;
 
+#define TRACE_RECORD_SIZE(nvalues)				\
+	(sizeof(common_record_t) + sizeof(uint64_t) * nvalues)
+
+static inline trace_record_t*
+__next_record(trace_record_t* record)
+{
+	return (trace_record_t*)(((char*) record) + TRACE_RECORD_SIZE(record->common.nvalues));
+}
+
 void
 start_trace(void)
 {
@@ -130,15 +139,6 @@ trace_flush(void)
 		fprintf(trace_file, "\n");
 	}
 	cur_record = records;
-}
-
-#define TRACE_RECORD_SIZE(nvalues)				\
-	(sizeof(common_record_t) + sizeof(uint64_t) * nvalues)
-
-static inline trace_record_t*
-__next_record(trace_record_t* record)
-{
-	return (trace_record_t*)(((char*) record) + TRACE_RECORD_SIZE(record->common.nvalues));
 }
 
 void

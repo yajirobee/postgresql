@@ -682,7 +682,7 @@ static struct config_bool ConfigureNamesBool[] =
 		{"enable_buckettracer", PGC_POSTMASTER, DEVELOPER_OPTIONS,
 		 gettext_noop("Enable Hash Bucket Tracer."),
 		 NULL
-		}
+		},
 		&enable_buckettracer,
 		false,
 		NULL, NULL, NULL

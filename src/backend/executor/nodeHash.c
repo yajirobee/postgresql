@@ -35,6 +35,7 @@
 #include "utils/memutils.h"
 #include "utils/lsyscache.h"
 #include "utils/syscache.h"
+#include "utils/trace.h"
 
 
 static void ExecHashIncreaseNumBatches(HashJoinTable hashtable);
@@ -959,9 +960,9 @@ ExecScanHashBucket(HashJoinState *hjstate,
 	trace_event5(enable_buckettracer, EVENT_BUCKET_SCAN,
 				 (uint64_t) hjstate->hj_HashTable->nbatch,
 				 (uint64_t) hjstate->hj_HashTable->nbuckets,
-				 (uint64_t) hjstate->hj_HashTable->speaceUsed,
+				 (uint64_t) hjstate->hj_HashTable->spaceUsed,
 				 (uint64_t) hjstate->hj_CurHashValue,
-				 (uint64_t) hjstate->CurBuket_Scanned_Tuples)
+				 (uint64_t) hjstate->CurBuket_Scanned_Tuples);
 	return false;
 }
 
