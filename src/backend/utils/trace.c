@@ -101,13 +101,6 @@ stop_trace(void)
 
 	trace_flush();
 	free(records);
-	res = fflush(trace_file);
-	if (res != 0)
-		ereport(ERROR, (errmsg("[%d] trace_flush failed: errno = %d",
-							   getpid(), res)));
-	else
-		ereport(DEBUG1, (errmsg("[%d] trace_flush succeeded",
-								getpid())));
 	res = fclose(trace_file);
 	if (res != 0)
 		ereport(ERROR, (errmsg("[%d] stop_trace failed: errno = %d",
@@ -122,6 +115,7 @@ void
 trace_flush(void)
 {
 	int i;
+	int res;
 	trace_record_t *record;
 
 	if (NULL == trace_file)
@@ -138,6 +132,11 @@ trace_flush(void)
 			fprintf(trace_file, "\t%lx", record->values[i]);
 		fprintf(trace_file, "\n");
 	}
+	res = fflush(trace_file);
+	if (res != 0)
+		ereport(ERROR, (errmsg("[%d] trace_flush failed (fflush): errno = %d",
+							   getpid(), res)));
+	ereport(LOG, (errmsg("[%d] trace_flush succeeded", getpid())));
 	cur_record = records;
 }
 
@@ -151,9 +150,14 @@ __trace_event(trace_event_t event, uint32_t nvalues, uint64_t values[])
 	if (NULL == trace_file)
 		return;
 
-	if ((uint64_t) cur_record - (uint64_t) records < (uint64_t) TRACE_RECORD_SIZE(nvalues))
+	if (TRACE_RECORD_REGION - ((uint64_t) cur_record - (uint64_t) records)
+		< (uint64_t) TRACE_RECORD_SIZE(nvalues))
+	{
+		ereport(LOG, (errmsg("[%d] trace_buffer is full. flushing", getpid())));
 		trace_flush();
-	Assert((uint64_t) cur_record - (uint64_t) records < TRACE_RECORD_REGION);
+	}
+	if ((uint64_t) cur_record - (uint64_t) records > TRACE_RECORD_REGION)
+		ereport(ERROR, (errmsg("[%d] trace_buffer run out", getpid())));
 
 	if (clock_gettime(CLOCK_REALTIME, &tp) != 0)
 		ereport(ERROR, (errmsg("clock_gettime(2) failed.")));
